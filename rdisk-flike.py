@@ -90,9 +90,9 @@ parser.add_argument("--RANDOM_POOL", type=str, help="Set the symlink of the rand
 parser.add_argument("-DC", "--default-config", action="store_true", help="Option to specify is the default configuration with the default index code of the configuration profiles(it's an stack into JSON).")
 parser.add_argument("-DCN", "--default-config-number", type=int, help="Option to specify is the default configuration at specific index code of the configuration profiles(it's an stack into JSON).")
 parser.add_argument("-FKout", "--factory-like-mode" ,action="store_true", help="Enable the feature to set an final look like the disk is from an factory to warehouse before in handles...")
-#parser.add_argument("-t", "--countdown", type=int, help="Shedule the begins of process after an specified seconds countdown...")
+parser.add_argument("-t", "--countdown", type=int, help="Shedule the begins of process after an specified seconds countdown...")
 parser.add_argument("-NOP","--no-action-mode", action="store_true", help="No action on the target, but usage of the random pool and countdown operationnal[FOR AN FAKE MODE].")
-#parser.add_argument("-tWKD", "--wait-key-to-disengage", type=str, help="Option to enable the key-protected disengage procedure(add an ask for disengage and an countdown, if the countdown is not set by the specific flag, the default countdown setted is 30(seconds).)")
+parser.add_argument("-tWKD", "--wait-key-to-disengage", type=str, help="Option to enable the key-protected disengage procedure(add an ask for disengage and an countdown, if the countdown is not set by the specific flag, the default countdown setted is 30(seconds).)")
 # v1.0 goals -------- ^ ^ ^ ^ ^
 # Yeah it's Rickiest  | | | | |
 #  Things... Crazy ?! | | | | |
