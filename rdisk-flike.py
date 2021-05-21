@@ -6,10 +6,11 @@
 # Version alpha ... and dev
 
 # importing dependences
+from _typeshed import NoneType
 import os 
 import json
 import argparse
-
+from base64 import b64encode as benc
 class rdisk_flike(object):
     def __init__(self):
         self.init_obj_vars()
@@ -28,20 +29,28 @@ class rdisk_flike(object):
     #
     def one_octal_op(self,pos,mode=None):
         if mode:
-            if mode == "wipe":
-                with open(self.target, 'wb+') as f:
-                    f.seek(pos, whence=0)
-                    f.write(chr(0))
-                    f.close()
-            elif mode == "randomize":
-                with open(self.target, 'wb+') as f:
-                    f.seek(pos, whence=0)
-                    f.write(chr(self.get_random()))
-                    f.close()
+            if self.NOP:
+                if mode == "wipe":
+                    os.system('echo \"{}\" &>/dev/null'.format(benc(chr(0))))
+                elif mode == "randomize":
+                    os.system('echo \"{}\" &>/dev/null'.format(benc(chr(self.get_random()))))
+            else:    
+                if mode == "wipe":
+                    with open(self.target, 'wb+') as f:
+                        f.seek(pos, whence=0)
+                        f.write(chr(0))
+                        f.close()
+                elif mode == "randomize":
+                    with open(self.target, 'wb+') as f:
+                        f.seek(pos, whence=0)
+                        f.write(chr(self.get_random()))
+                        f.close()
         else:
             print("Abort operation.")
             exit(-1)
-
+    # set nop func
+    def set_NOP(self,value=False):
+        self.NOP = value
     # function to wipe anything
     def op_target(self,mode="wipe",target=None,n_passes=3,limit_size=None,randomized=False,random_pool="/dev/random"):
         self.random_pool = random_pool
@@ -81,9 +90,9 @@ parser.add_argument("--RANDOM_POOL", type=str, help="Set the symlink of the rand
 parser.add_argument("-DC", "--default-config", action="store-true", help="Option to specify is the default configuration with the default index code of the configuration profiles(it's an stack into JSON).")
 parser.add_argument("-DCN", "--default-config-number", type=int, help="Option to specify is the default configuration at specific index code of the configuration profiles(it's an stack into JSON).")
 parser.add_argument("-FKout", "--factory-like-mode" ,action="store-true", help="Enable the feature to set an final look like the disk is from an factory to warehouse before in handles...")
-#parser.add_argument("-t", "--countdown", type=int, help="Shedule the begins of process after an specified seconds countdown...")
+parser.add_argument("-t", "--countdown", type=int, help="Shedule the begins of process after an specified seconds countdown...")
 parser.add_argument("-NOP","--no-action-mode", action="store-true", help="No action on the target, but usage of the random pool and countdown operationnal[FOR AN FAKE MODE].")
-#parser.add_argument("-tWKD", "--wait-key-to-disengage", type=str, help="Option to enable the key-protected disengage procedure(add an ask for disengage and an countdown, if the countdown is not set by the specific flag, the default countdown setted is 30(seconds).)")
+parser.add_argument("-tWKD", "--wait-key-to-disengage", type=str, help="Option to enable the key-protected disengage procedure(add an ask for disengage and an countdown, if the countdown is not set by the specific flag, the default countdown setted is 30(seconds).)")
 # v1.0 goals -------- ^ ^ ^ ^ ^
 # Yeah it's Rickiest  | | | | |
 #  Things... Crazy ?! | | | | |
@@ -98,6 +107,8 @@ NOP              = args.no_action_mode
 DC               = args.default_config
 DNC              = args.default_config_number
 FKout            = args.factory_like_mode
+tWKD             = args.wait_key_to_disengage
+tdwn             = args.countdown
 #====================================================================
 FINAL_COMMAND_NAME = "rdiskfactorylike"
 #this parts... pfff need to be more smart .... so easy haha, later...
@@ -148,7 +159,22 @@ if (DNC) or (DC):
     RANDOM_POOL=DEFAULT_RANDOM_POOL
 elif (not (DNC)) and (not DC):
     TARGET_PATH=TARGET
-    OPERATIONS=OPERATION_STRING
+    if OPERATION_STRING:
+        OPERATIONS=OPERATION_STRING
+    else:
+        OPERATIONS=[["wipe",3,"/dev/urandom"],["randomize",7,"/dev/urandom"],["wipe",1,None]]
+#
+#
+if not RANDOM_POOL:
+    RANDOM_POOL="/dev/random"
+if type(FKout)==NoneType:
+    FKout = False
+
+
 #
 rdfl = rdisk_flike()
+if NOP:
+    rdfl.set_NOP(value=True)
+else:
+    rdfl.set_NOP(value=False)
 rdfl.run_command(TARGET_PATH,OPERATIONS,random_pool_overset=RANDOM_POOL,factory_like_mode=FKout)
