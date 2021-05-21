@@ -15,7 +15,7 @@ class rdisk_flike(object):
         self.init_obj_vars()
     def get_random(self):
         with open(self.random_pool,'rb') as f:
-            d = int(f.read(1))
+            d = ord(f.read(1))
             f.close()
         return d
     # functions to op on pos
@@ -37,12 +37,12 @@ class rdisk_flike(object):
                 if mode == "wipe":
                     with open(self.target, 'wb+') as f:
                         f.seek(pos, whence=0)
-                        f.write(chr(0))
+                        f.write(chr(0).encode())
                         f.close()
                 elif mode == "randomize":
                     with open(self.target, 'wb+') as f:
                         f.seek(pos, whence=0)
-                        f.write(chr(self.get_random()))
+                        f.write(chr(self.get_random()).encode())
                         f.close()
         else:
             print("Abort operation.")
@@ -60,7 +60,7 @@ class rdisk_flike(object):
             print("\r({}/{}) passes\r".format(it_1,n_passes),end='')
             pos = self.nextPos(randomized)
             cnt_oct += 1
-            if ((type(limit_size) == int) & (limit_size)):
+            if ((type(limit_size) == int) & bool(limit_size)):
                 if cnt_oct > limit_size:
                     break
             self.one_octal_op(pos,"wipe")
@@ -71,6 +71,7 @@ class rdisk_flike(object):
         self.target = None
         self.counter = 0
         self.random_pool = None
+        self.NOP = False
     def run_command(self,target, operations=[["wipe",3,"/dev/urandom"],["randomize",7,"/dev/urandom"],["wipe",1,None]], random_pool_overset=None, factory_like_mode=True):
         for op in operations:
             mode,n_passes,random_pool = op[0], op[1], op[2]
@@ -84,7 +85,7 @@ class rdisk_flike(object):
 #
 #
 parser = argparse.ArgumentParser()
-parser.add_argument("TARGET", type=str, help="The file(virtual disk) or the symlink of the volume to be the target.")
+parser.add_argument("target", type=str, help="The file(virtual disk) or the symlink of the volume to be the target.")
 parser.add_argument("--OP_STRING", type=str, help="OPERATION CODE STRING(JSON OR JUST AN PYTHON STACK LIST INTO AN STRING... THAT WORK...)", required=False)
 parser.add_argument("--RANDOM_POOL", type=str, help="Set the symlink of the random stream if you want choice !", required=False)
 parser.add_argument("-DC", "--default-config", action="store_true", help="Option to specify is the default configuration with the default index code of the configuration profiles(it's an stack into JSON).")
@@ -100,7 +101,7 @@ parser.add_argument("-tWKD", "--wait-key-to-disengage", type=str, help="Option t
 #
 #   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 args             = parser.parse_args()
-TARGET           = args.TARGET
+TARGET           = args.target
 OPERATION_STRING = args.OP_STRING
 RANDOM_POOL      = args.RANDOM_POOL
 NOP              = args.no_action_mode
@@ -139,10 +140,10 @@ if INTERNALS_SETTERS_MODE == "config":
     # here place arg parsing for set configuration id 
     if DNC:
         n_conf = DNC
-    elif DC and not DNC: 
+    elif bool(DC) and not DNC: 
         #or just ... read the default number
         DEFAULT_CONF_NUM = data_config["DEFAULT_CONF_ID_NUMBER"]
-        if ( type(DEFAULT_CONF_NUM) == int ) and (DEFAULT_CONF_NUM):
+        if ( type(DEFAULT_CONF_NUM) == int ) and bool(DEFAULT_CONF_NUM):
             n_conf = DEFAULT_CONF_NUM
 
 
@@ -153,12 +154,14 @@ if INTERNALS_SETTERS_MODE == "config":
 #
 
 #
-if (DNC) or (DC):
-    TARGET_PATH=DEFAULT_TARGET
+if (DNC) or bool(DC):
+    if not TARGET:
+        TARGET_PATH=DEFAULT_TARGET
     OPERATIONS=DEFAULT_OP
     RANDOM_POOL=DEFAULT_RANDOM_POOL
-elif (not (DNC)) and (not DC):
-    TARGET_PATH=TARGET
+elif (not (DNC)) and (not bool(DC)):
+    if not TARGET:
+        TARGET_PATH=TARGET
     if OPERATION_STRING:
         OPERATIONS=OPERATION_STRING
     else:
