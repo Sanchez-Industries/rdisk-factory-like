@@ -152,7 +152,7 @@ if INTERNALS_SETTERS_MODE == "config":
     DEFAULT_OP = data_config["DEFAULTS"][n_conf]["OP"]
     DEFAULT_RANDOM_POOL = data_config["DEFAULTS"][n_conf]["RANDOM_POOL"]
 #
-
+TARGET_PATH=TARGET
 #
 if (DNC) or bool(DC):
     if not TARGET:
