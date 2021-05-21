@@ -1,5 +1,12 @@
-[
-    {
-        
-    }
-]
+{
+    "DEFAULT_CONF_ID_NUMBER": 0,
+    "DEFAULTS": [
+        {
+            "meta-data": {"autors": ["paranoia-mind-state", "0x7CB", "RS"]},
+            "name": "DEFAULT - paranoid profile",
+            "TARGET":null,
+            "OP":[["wipe",3,"/dev/urandom"],["randomize",7,"/dev/urandom"],["wipe",1,null]],
+            "RANDOM_POOL":"/dev/random"
+        }
+    ]
+}

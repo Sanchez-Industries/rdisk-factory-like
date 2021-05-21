@@ -65,18 +65,33 @@ class rdisk_flike(object):
     def run_command(self,target, operations=[["wipe",3,"/dev/urandom"],["randomize",7,"/dev/urandom"],["wipe",1,None]], factory_like_mode=True):
         for op in operations:
             mode,n_passes,random_pool = op[0], op[1], op[2]
-            self.op_target(mode=mode,target=target,n_passes=n_passes,limit_size=None,randomized=(random_pool!=None && type(random_pool)==str),random_pool=random_pool)
+            self.op_target(mode=mode,target=target,n_passes=n_passes,limit_size=None,randomized=(random_pool!=None and type(random_pool)==str),random_pool=random_pool)
         if factory_like_mode:
             self.flike()
         exit(0)
 
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("TARGET", type=str, help="The file(virtual disk) or the symlink of the volume to be the target.")
+parser.add_argument("--OP_STRING", type=str, help="OPERATION CODE STRING(JSON OR JUST AN PYTHON STACK LIST INTO AN STRING... THAT WORK...)", required=False)
+parser.add_argument("--RANDOM_POOL", type=str, help="Set the symlink of the random stream if you want choice !", required=False)
+#parser.add_argument("-DC", "--default-config", action="store-true", help="Option to specify is the default configuration with the default index code of the configuration profiles(it's an stack into JSON).")
+#parser.add_argument("-DCN", "--default-config-number", type=int, help="Option to specify is the default configuration at specific index code of the configuration profiles(it's an stack into JSON).")
+#parser.add_argument("-t", "--countdown", type=int, help="Shedule the begins of process after an specified seconds countdown...")
+#parser.add_argument("-NOP","--no-action-mode", action="store-true", help="No action on the target, but usage of the random pool and countdown operationnal[FOR AN FAKE MODE].")
+#parser.add_argument("-tWKD", "--wait-key-to-disengage", type=str, help="Option to enable the key-protected disengage procedure(add an ask for disengage and an countdown, if the countdown is not set by the specific flag, the default countdown setted is 30(seconds).)")
+# v1.0 goals -------- ^ ^ ^ ^ ^
+# Yeah it's Rickiest  | | | | |
+#  Things... Crazy ?! | | | | |
+#=-=-=-=-=-=-=-=-=-=-=+-+-+-+-+
+args = parser.parse_args()
 #
 FINAL_COMMAND_NAME = "rdiskfactorylike"
 #
 config_file_path = "/var/{}/conf.json".format(FINAL_COMMAND_NAME)
 #
 INTERNALS_SETTERS_MODE = "config"
-
 #
 if INTERNALS_SETTERS_MODE == "config":
     # inits
