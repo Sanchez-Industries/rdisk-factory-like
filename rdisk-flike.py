@@ -57,6 +57,7 @@ class rdisk_flike(object):
         self.counter = 0
         self.target = target
         for it_1 in range(0, n_passes):
+            print("\r({}/{}) passes\r".format(it_1,n_passes),end='')
             pos = self.nextPos(randomized)
             cnt_oct += 1
             if ((type(limit_size) == int) & (limit_size)):
@@ -166,7 +167,7 @@ elif (not (DNC)) and (not DC):
 #
 if not RANDOM_POOL:
     RANDOM_POOL="/dev/random"
-if type(FKout)==NoneType:
+if FKout==None:
     FKout = False
 
 
